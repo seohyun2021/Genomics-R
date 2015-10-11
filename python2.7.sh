@@ -20,6 +20,6 @@ cd Python-2.7.8
 make
 make altinstall
 
-# Checking Python version:
+# install pip`
 
 curl https://raw.githubusercontent.com/pypa/pip/master/contrib/get-pip.py | python2.7 -
