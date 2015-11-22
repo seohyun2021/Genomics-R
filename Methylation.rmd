@@ -1,0 +1,300 @@
+
+---
+output: html_document
+---
+### Jongchul Seon
+
+### Methylation example 
+
+--------
+
+```{r chunk1,echo=TRUE}
+
+library(yeastRNASeq)
+library(ShortRead)
+library(leeBamViews)
+library(oligo)
+library(GEOquery)
+library(limma)
+library(minfi)
+##library(minfiData)
+library(AnnotationHub)
+library(DESeq2)
+library(edgeR)
+
+```
+
+
+
+##question 1
+
+fastqFilePath <-  system.file("reads", "wt_1_f.fastq.gz", package = "yeastRNASeq")
+reads <- readFastq(fastqFilePath)
+
+short <- sread(reads)[1:1000000]
+short_mt <-as.matrix(short)
+characters <- short_mt[,5]
+
+cbase <- DNAStringSet(characters)
+letterFrequency(cbase, "A")
+sum(letterFrequency(cbase, "A"))
+
+quality_mat <- as(quality(reads), "matrix")[1:1000000,5:5]
+summary(quality_mat)
+
+## question 3
+
+bamFilePath <- system.file("bam", "isowt5_13e.bam", package="leeBamViews")
+
+bamFile <- BamFile(bamFilePath)
+bamFile
+
+aln <- scanBam(bamFile)
+length(aln)
+
+head((aln[[1]])[[10]])
+
+aln <- aln[[1]]
+names(aln)
+head(aln$qname)
+
+head(aln$rname)
+
+gr <- GRanges(seqnames = "Scchr13",
+              ranges = IRanges(start = c(800000), end = c(801000)))
+
+params <- ScanBamParam(which = gr, what = scanBamWhat())
+aln <- scanBam(bamFile, param = params)
+
+length(aln[[1]]$qname)
+
+aln[[1]]$pos
+
+sum(table(aln[[1]]$pos) ==1)
+
+length(aln[[1]]$pos)
+
+## question 4
+bpaths <- list.files(system.file("bam", package="leeBamViews"), pattern = "bam$", full=TRUE)
+bamFiles <- BamFileList(bpaths)
+bamFiles
+
+readsnumber <- function(bamFile) {
+  
+    readsnum <- numeric(length(bamFiles))
+    
+    gr2 <- GRanges(seqnames = "Scchr13",
+                   ranges = IRanges(start = c(807762), end = c(808068)))
+    
+    ends <- length(bamFiles)
+    
+    for (i in 1:ends) {
+    
+    params <- ScanBamParam(which = gr2, what = scanBamWhat())
+    aln <- scanBam(bamFiles[[i]], param = params)
+    
+    readsnum[i] <-length(aln[[1]]$qname)
+
+    }  
+    readsnum
+  }
+
+summary(readsnumber(bamFiles))
+
+#question 5
+
+getClass("GeneFeatureSet")
+
+library(GEOquery)
+getGEOSuppFiles("GSE38792")
+list.files("GSE38792")
+untar("GSE38792/GSE38792_RAW.tar", exdir = "GSE38792/CEL")
+list.files("GSE38792/CEL")
+
+## ----readData, message=FALSE---------------------------------------------
+library(oligo)
+celfiles <- list.files("GSE38792/CEL", full = TRUE)
+rawData <- read.celfiles(celfiles)
+
+exprs(rawData)[1:4,1:3]
+
+max(exprs(rawData))
+
+filename <- sampleNames(rawData)
+pData(rawData)$filename <- filename
+sampleNames <- sub(".*_", "", filename)
+sampleNames <- sub(".CEL.gz$", "", sampleNames)
+sampleNames(rawData) <- sampleNames
+pData(rawData)$group <- ifelse(grepl("^OSA", sampleNames(rawData)),
+                               "OSA", "Control")
+
+normData <- rma(rawData)
+normData
+
+colnames(exprs(normData))
+ex.dt <- as.data.frame(exprs(normData))
+
+specific <- subset(ex.dt, y == "8149273")
+
+specific <- subset(ex.dt, rownames(ex.dt) == "8149273")
+
+specific[,1:8] 
+
+mean(specific[,1:8]) 
+
+mean(as.numeric(specific[,1:8]))
+
+#question 6-7
+
+
+library(leukemiasEset)
+biocLite("leukemiasEset")
+library(SummarizedExperiment)
+library(leukemiasEset)
+data(leukemiasEset)
+
+colnames(exprs(leukemiasEset))
+colnames(exprs(normData))
+
+table(normData$group)
+
+compare <- model.matrix(~ normData$group)
+
+library(limma)
+
+diff <- lmFit(normData, compare)
+diff <- eBayes(diff)
+topTable(diff)
+
+topTable(diff,sort.by="p")
+topTable(diff,p.value=0.05)
+
+dim(topTable(diff,p.value=0.05))
+
+#question 8
+
+getGEOSuppFiles("GSE68777")
+untar("GSE68777/GSE68777_RAW.tar", exdir = "GSE68777/idat")
+head(list.files("GSE68777/idat", pattern = "idat"))
+
+idatFiles <- list.files("GSE68777/idat", pattern = "idat.gz$", full = TRUE)
+sapply(idatFiles, gunzip, overwrite = TRUE)
+
+rgSet <- read.450k.exp("GSE68777/idat")
+rgSet
+pData(rgSet)
+
+
+####pD.all <- pData(geoMat[1])
+pD.all <- pData(geoMat[[1]])
+
+pD <- pD.all[, c("title", "geo_accession", "characteristics_ch1.1", "characteristics_ch1.2")]
+head(pD)
+names(pD)[c(3,4)] <- c("group", "sex")
+pD$group <- sub("^diagnosis: ", "", pD$group)
+pD$sex <- sub("^Sex: ", "", pD$sex)
+
+sampleNames(rgSet) <- sub(".*_5", "5", sampleNames(rgSet))
+rownames(pD) <- pD$title
+pD <- pD[sampleNames(rgSet),]
+pData(rgSet) <- pD
+rgSet
+
+####biocLite("IlluminaHumanMethylation450kmanifest")
+##library(IlluminaHumanMethylation450kanno.ilmn12.hg19). Manually download the package and put the unzipped file in the R package directory.
+
+grSet <- preprocessQuantile(rgSet)
+grSet
+
+grSet2 <- preprocessFunnorm(rgSet)
+
+grSet2$group
+
+control <- getBeta(grSet2[,grSet2$group == "Ctr"])
+
+mania <- getBeta(grSet2[,grSet2$group == "Mania"])
+
+rownames(control)
+
+cg_status <- getIslandStatus(grSet2)
+
+control_cg <- cbind(control,cg_status)
+
+mania_cg <- cbind(mania,cg_status)
+
+control_os <- subset(control_cg,cg_status == "OpenSea")
+mania_os <- subset(mania_cg,cg_status == "OpenSea")
+
+mean(as.numeric(control_os[,1:20]))
+mean(as.numeric(mania_os[,1:20]))
+
+control_os
+
+### question 8 - RGsetEx should be used for this question
+### pData(RGsetEx)$Sample_Name
+
+##library(minfiData). Manually download the package and put the untared file in the R package directory.
+
+sheet <- read.450k.sheet("C:\\Program Files\\R\\R-3.2.2\\library\\minfiData\\inst\\extdata", pattern = "csv$")
+RGsetEx <- read.450k.exp(targets = sheet)
+save(RGsetEx, file = "C:\\Program Files\\R\\R-3.2.2\\library\\minfiData\\data\\RGsetEx.rda", compress = "xz")
+
+grSet3 <- preprocessFunnorm(RGsetEx)
+
+###grSet2 <- preprocessFunnorm(rgSet)
+
+grSet3$Sample_Group
+
+control2 <- getBeta(grSet3[,grSet3$Sample_Group == "GroupA"])
+
+mania2 <- getBeta(grSet3[,grSet3$Sample_Group == "GroupB"])
+
+rownames(control2)
+
+cg_status2 <- getIslandStatus(grSet3)
+
+control_cg2 <- cbind(control2,cg_status2)
+
+mania_cg2 <- cbind(mania2,cg_status2)
+
+control_os2 <- subset(control_cg2,cg_status2 == "OpenSea")
+mania_os2 <- subset(mania_cg2,cg_status2 == "OpenSea")
+
+mean(as.numeric(control_os2[,1:3])) - (mean(as.numeric(mania_os2[,1:3])))
+
+### question 9
+ah <- AnnotationHub()
+
+qhs <- query(ah, c("narrowPeak", "hg19", "Caco2", "DNase", "AWG"))
+
+data <- qhs[[1]]
+
+granges(grSet3)
+
+subsetByOverlaps(data,granges(grSet3))
+
+### question 10
+library(zebrafishRNASeq)
+
+data(zfGenes)
+
+head(zfGenes)
+
+##spikes <- zfGenes[grep("^ERCC",rownames(zfGenes)),]
+##head(spikes)
+
+nonspike <-  zfGenes[-c(grep("^ERCC",rownames(zfGenes))),]
+
+
+samples <- data.frame(row.names=c("Ctl1","Ctl3","Ctl5","Trt9","Trt11","Trt13"), condition=as.factor(c(rep("ctl",3),rep("trt",3))))
+samples
+
+zebra_ex <- DESeqDataSetFromMatrix(countData = nonspike, colData=samples, design=~condition)
+
+zebra_ds <- DESeq(zebra_ex)
+
+zebra_re <- results(zebra_ds)
+
+subset(zebra_re,zebra_re$padj <= 0.05)
+
+
