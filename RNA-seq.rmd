@@ -1,13 +1,13 @@
 ---
 output: html_document
 ---
-### Jongchul Seon
+#### Jongchul Seon
 
-### RNA-seq example 
+#### RNA-seq example 
 
 
-### load data - summary
-### the RNA-seq data has no N.A.
+#### -------- load -----------------------------------------
+#### the RNA-seq data has no N.A.
 
 --------
 
@@ -40,8 +40,8 @@ head(pdata_bot)
 
 --------
 
-### Data cleaning 1 - summary
-### Genes whose average counts are over than 5 are selected and log(2) transformed.
+#### ------ Data cleaning --------------------------------------
+#### Genes whose average counts are over than 5 are selected and log(2) transformed.
 
 --------
 
@@ -72,8 +72,8 @@ hist(edata,,col=2,range=0)
 
 --------
 
-### summary
-### NCBI Build 37, mm9. check out the paper which describes the data, Evaluating Gene Expression in C57BL/6J and DBA/2JMouse Striatum Using RNA-Seq and Microarrays.  http://www.ncbi.nlm.nih.gov/pubmed?term=21455293. 
+#### ----------------------------------------------------------
+#### NCBI Build 37, mm9. check out the paper which describes the data, Evaluating Gene Expression in C57BL/6J and DBA/2JMouse Striatum Using RNA-Seq and Microarrays.  http://www.ncbi.nlm.nih.gov/pubmed?term=21455293. 
 
 --------
 
@@ -99,8 +99,8 @@ species
 
 --------
 
-### Using limma package to find differently expressed genes between two strands. 
-### 223 genes are differently expressesed between two strands at the 5% FDR level using Benjamini-Hochberg correction.
+#### Using limma package to find differently expressed genes between two strands. 
+#### 223 genes are differently expressesed between two strands at the 5% FDR level using Benjamini-Hochberg correction.
 
 --------
 
@@ -126,8 +126,8 @@ length(DE)
 
 --------
 
-### Gene Set analysis using goseq package
-### using database of 'Gene Ontology Consortium' to do gene set analysis
+#### Gene Set analysis using goseq package
+#### using database of 'Gene Ontology Consortium' to do gene set analysis
 
 
 --------
