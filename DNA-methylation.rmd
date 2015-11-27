@@ -1,0 +1,56 @@
+---
+  output: html_document
+---
+  
+#### Jongchul Seon
+  
+#### 
+  
+  
+#### -------- load -----------------------------------------
+#### please check below
+#### http://kasperdanielhansen.github.io/genbioconductor/html/minfi.html
+#### http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0132001 or http://www.ncbi.nlm.nih.gov/pubmed/26147665
+
+
+
+```{r chunk1,echo=TRUE}
+
+library(GEOquery)
+library(minfi)
+##library(minfiData)
+library(AnnotationHub)
+library(illuminaio)
+library(IlluminaDataTestFiles)
+
+## source("http://www.bioconductor.org/biocLite.R")
+## biocLite(c("minfi"))
+
+getwd()
+
+getGEOSuppFiles("GSE68777")
+untar("GSE68777/GSE68777_RAW.tar", exdir = "GSE68777/idat")
+head(list.files("GSE68777/idat", pattern = "idat"))
+
+idatFiles <- list.files("GSE68777/idat", pattern = "idat.gz$", full = TRUE)
+
+sapply(idatFiles, gunzip, overwrite = TRUE)
+
+rgSet <- read.450k.exp("GSE68777/idat")
+rgSet
+pData(rgSet)
+
+tempdir()
+
+geoMat <- getGEO("GSE68777")
+pD.all <- pData(geoMat[[1]])
+
+class(pD.all)
+head(pD.all)
+names(pD.all)
+
+
+```
+
+--------
+
