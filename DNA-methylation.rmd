@@ -4,10 +4,7 @@
   
 #### Jongchul Seon
   
-#### 
-  
-  
-#### -------- load -----------------------------------------
+#### -------- get Files from http://www.ncbi.nlm.nih.gov/gds/?term=GSE68777 ---------------------
 #### please check below
 #### http://kasperdanielhansen.github.io/genbioconductor/html/minfi.html
 #### http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0132001 or http://www.ncbi.nlm.nih.gov/pubmed/26147665
@@ -20,8 +17,7 @@ library(GEOquery)
 library(minfi)
 ##library(minfiData)
 library(AnnotationHub)
-library(illuminaio)
-library(IlluminaDataTestFiles)
+
 
 ## source("http://www.bioconductor.org/biocLite.R")
 ## biocLite(c("minfi"))
@@ -38,19 +34,131 @@ sapply(idatFiles, gunzip, overwrite = TRUE)
 
 rgSet <- read.450k.exp("GSE68777/idat")
 rgSet
+
+
+
+##class(rgSet)
+##??RGChannelSet
+##??minfi
+
+## library(illuminaio)
+## library(IlluminaDataTestFiles)
+
+## head(list.files("GSE68777/idat", pattern = "idat"))
+
+## green1 <- readIDAT("D:/R/GSE68777/idat/GSM1681154_5958091019_R03C02_Grn.idat")
+
+## red1 <- readIDAT("D:/R/GSE68777/idat/GSM1681154_5958091019_R03C02_Red.idat")
+
+## names(green1)
+## head(green1$Quants)
+
+##summary(green1$Quants[,3])
+##summary(red1$Quants[,1])
+##hist(log2(green1$Quants[,1]))
+##hist(log2(red1$Quants[,1]))
+
+
 pData(rgSet)
 
 tempdir()
 
-geoMat <- getGEO("GSE68777")
+
+```
+
+
+#### -------- get the phenotype data ---------------------
+
+
+```{r chunk2,echo=TRUE}
+
+###getGEO
+###geoMat <- getGEO("GSE68777")
+geoMat <- getGEO("GSE68777",destdir = "D:\\R")
+
+### destdir = "D:\\R" => window OS directory
+
+
 pD.all <- pData(geoMat[[1]])
 
 class(pD.all)
 head(pD.all)
 names(pD.all)
 
+```
+
+#### -------- modify phenotype data for further analysis-----------------------------------------
+
+```{r chunk3,echo=TRUE}
+
+
+pD <- pD.all[, c("title", "geo_accession", "characteristics_ch1.1", "characteristics_ch1.2")]
+head(pD)
+
+names(pD)[c(3,4)] <- c("group", "sex")
+head(pD)
+
+pD$group
+pD$group <- sub("^diagnosis: ", "", pD$group)
+pD$group
+
+pD$sex 
+pD$sex <- sub("^Sex: ", "", pD$sex)
+pD$sex
+
+sampleNames(rgSet) 
+sampleNames(rgSet) <- sub(".*_5", "5", sampleNames(rgSet))
+sampleNames(rgSet) 
+
+rownames(pD) <- pD$title
+pD <- pD[sampleNames(rgSet),]
+pData(rgSet) <- pD
+pData(rgSet)
+rgSet
+
+
 
 ```
 
---------
+
+#### -------- data Normalization 
+####---------- Please check the paper, Functional normalization of 450k methylation array data improves replication in large cancer studies,http://www.genomebiology.com/2014/15/12/503
+-----------------------------------------
+
+```{r chunk4,echo=TRUE}
+
+preprocessFunnorm
+
+
+
+grSet2 <- preprocessFunnorm(rgSet)
+
+grSet2$group
+
+
+```
+
+
+```{r chunk5,echo=TRUE}
+
+control <- getBeta(grSet2[,grSet2$group == "Ctr"])
+
+mania <- getBeta(grSet2[,grSet2$group == "Mania"])
+
+rownames(control)
+
+cg_status <- getIslandStatus(grSet2)
+
+control_cg <- cbind(control,cg_status)
+
+mania_cg <- cbind(mania,cg_status)
+
+control_os <- subset(control_cg,cg_status == "OpenSea")
+mania_os <- subset(mania_cg,cg_status == "OpenSea")
+
+mean(as.numeric(control_os[,1:20]))
+mean(as.numeric(mania_os[,1:20]))
+
+
+```
 
