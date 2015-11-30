@@ -139,11 +139,32 @@ grSet2$group
 ```
 
 
+#### -------- 450k Methylation level are prepaired for further analysis. 
+
 ```{r chunk5,echo=TRUE}
 
 control <- getBeta(grSet2[,grSet2$group == "Ctr"])
 
 mania <- getBeta(grSet2[,grSet2$group == "Mania"])
+
+
+total <- cbind(rowSums(control),rowSums(mania))
+plot(total,col=3)
+
+
+head(control)
+hist(control[1,])
+hist(control[3,])
+hist(rowSums(control))
+
+
+kmeans1 = kmeans(rowSums(control),centers=2)
+table(kmeans1$cluster)
+
+
+kmeans2 = kmeans(rowSums(mania),centers=2)
+table(kmeans2$cluster)
+
 
 rownames(control)
 
