@@ -10,8 +10,8 @@ In my point of view, R is very powerful tool for students who want to understand
 
 If someone is interested in more examples and teaching materials, there are some free courses on the web. 
 
-www.coursera.org
-www.edx.org
-lagunita.stanford.edu
+- www.coursera.org
+- www.edx.org
+- lagunita.stanford.edu
 
 
