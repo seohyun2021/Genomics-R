@@ -1,6 +1,6 @@
 # genomic-R
 
-I've done this to sum up JHU "genomic data science" in Coursera.
+I've done this to summarize JHU "genomic data science" in Coursera.
 
 In my point of view, R is very powerful tool for students who want to understand genomic data in statistical way and it can save time for pratical research.  
 
