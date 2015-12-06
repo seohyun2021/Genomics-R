@@ -4,14 +4,16 @@
   
   #### Jongchul Seon
   
-  #### -------- get Files from http://www.ncbi.nlm.nih.gov/gds/?term=GSE68777 ---------------------
+ 
 #### please check below
-#### http://kasperdanielhansen.github.io/genbioconductor/html/minfi.html
-#### http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0132001 or http://www.ncbi.nlm.nih.gov/pubmed/26147665
+#### http://www.ncbi.nlm.nih.gov/pubmed/26343147
 
 ```{r chunk1,echo=TRUE}
 
-library(airway)
+library(GEOquery)
+
+getwd()
+
 
 ```
 
