@@ -139,9 +139,20 @@ grSet2$group
 ```
 
 
-#### -------- 450k Methylation level are prepaired for further analysis. 
+#### --------please check http://genomicsclass.github.io/book/pages/inference_for_DNAmeth.html
 
 ```{r chunk5,echo=TRUE}
+
+## design <- model.matrix(~ grSet2$group)
+## bumps <- bumphunter(grSet2, design = design, B = 0,
+                      type = "Beta", cutoff = 0.25)
+
+## class(bumps)
+## attributes(bumps)
+
+## head(bumps$table)
+## plot((bumps$table)[,4])
+## dim(bumps$table)
 
 control <- getBeta(grSet2[,grSet2$group == "Ctr"])
 
