@@ -9,10 +9,10 @@ In my point of view, R is a very powerful tool for students who want to understa
 3. RNA-Count2.rmd
 4. miRNA.rmd
 
-If someone is interested in more examples and courses related with genomics, there are more (free) courses on the web. 
+I appreciate below free on-line courses which I've studied genomics. 
 
 - www.coursera.org
 - www.edx.org
 - lagunita.stanford.edu
 
-
+Have a fun!!!!!
