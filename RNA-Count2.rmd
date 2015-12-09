@@ -14,6 +14,7 @@ library(GEOquery)
 library(oligo)
 library(dendextend)
 library(biomaRt)
+library(limma)
 
 getwd()
 
@@ -81,6 +82,20 @@ genes <- as.vector(as.matrix(data))
 
 genes_age <- exprs(normData)[rownames(exprs(normData))  %in% genes,]
 
+genes_age
+
+boxplot(genes_age)
+
+dist1 = dist(t(genes_age))
+
+hclust1 = hclust(dist1)
+plot(hclust1)
+
+dend = as.dendrogram(hclust1)
+dend = color_labels(hclust1,2,col=1:2)
+plot(dend)
+
+heatmap(genes_age)
 
 ```
 
@@ -151,7 +166,28 @@ rownames(pD)
 ```
 
 
-```{r chunk4,echo=TRUE}
+```{r chunk5,echo=TRUE}
+
+
+mod = model.matrix(~ pD$age)
+fit_limma = lmFit(exprs(normData),mod)
+ebayes_limma = eBayes(fit_limma)
+
+limma_pvals = topTable(ebayes_limma,adjust.method="BH",sort.by="none",number=dim(exprs(normData))[1])
+
+sum(limma_pvals$adj.P.Val < 0.05)
+
+genes <- limma_pvals$adj.P.Val < 0.05
+
+###DE <- featureNames(fdata_bot)[genes]
+
+###length(DE)
+
+```
+
+
+
+```{r chunk6,echo=TRUE}
 
 head(listMarts())
 mart <- useMart("ensembl")
