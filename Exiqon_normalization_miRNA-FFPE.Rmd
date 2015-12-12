@@ -1,0 +1,116 @@
+#developed by Miljana Tanic
+#date: 24-09-2014 
+#e-mail: tanic.miljana@gmail.com
+#Human Genetics Group, CNIO
+#input file: Exiqon miRNAs 1color files (Agilent Feature Extraction 10), 
+#Run on R version 3.1
+#normexp background correction, Quantiles normalization and quality control  
+#Acknowledgements: Gonzalo Gomez(Bioinformatics Unit, CNIO).
+
+
+library(GEOquery)
+
+getGEOSuppFiles("GSE44899")
+list.files("GSE44899")
+
+library(limma)
+library(genefilter)
+library(base)
+library(Biobase)
+library(arrayQualityMetrics)
+
+mypath <- readline("Please, insert the path to the Exiqon and target files folder: ")
+filename <- readline("Please, insert the name of the eset output file (.RData): ")
+setwd(mypath)
+
+# Reading targets file.                                           
+targets <- readTargets("targets.txt", row.names="FullName")
+
+#Importing Exiqon files
+RG <- read.maimages(targets, source="agilent", green.only=TRUE, 
+                    names=targets$SampleName)
+names(RG)
+names(RG$genes)
+
+#Array quality assesment
+boxplot(log2(RG$E), main="log2 Raw Signal Intensity", 
+        xlab=NULL, ylab="log2 Signal")
+
+PlotDensity <- function (object, maintitle) 
+{
+  samples = colnames(object)
+  nARR = dim(object)[2]
+  colors <- rainbow(nARR, s = 1, v = 1, start = 0, end = max(1, 
+                                                             nARR - 1)/nARR)
+  y.max = c()
+  x.max = c()
+  for (n in 1:nARR) {
+    y.max[n] = max(density(object[, n], na.rm = TRUE)$y)
+    x.max[n] = max(density(object[, n], na.rm = TRUE)$x)
+  }
+  y.pos = order(y.max, decreasing = TRUE, na.last = NA)
+  x.pos = order(x.max, decreasing = TRUE, na.last = NA)
+  for (n in y.pos) {
+    k = which(y.pos == n)
+    if (n == y.pos[1]) 
+      plot(density(object[, n], na.rm = TRUE), col = colors[n], 
+           main = "", asp = 0.7 * x.max[x.pos[1]]/y.max[y.pos[1]])
+    else lines(density(object[, n], na.rm = TRUE), col = colors[n])
+  }
+  title(main = maintitle)
+}
+
+PlotDensity(log2(RG$E), main="Raw Signal Density" )
+
+#ArrayQualityMetrics
+eSet <- new("ExpressionSet", exprs = RG$E)
+arrayQualityMetrics(eSet, outdir="QC_Report", force = TRUE, do.logtransform = TRUE)
+
+#Removing the Hy3 probes and empty spots
+RGfilt_0 <- RG[RG$genes$ControlType == 0 ,] 
+RGfilt_0 <- RG[RGfilt_0$genes$GeneName != "Hy3" ,] 
+
+#Background correction
+RGbg <- backgroundCorrect(RGfilt_0, method = "normexp", offset=50)
+
+#Normalizing by quantile method and log2 scaling for expresion values
+RG_norm <- normalizeBetweenArrays(RGbg$E, method="quantile")
+RG_lognorm<-log2(RG_norm)
+RG_raw <- RGbg$E
+
+#ArrayQualityMetrics for Normalized and BG corrected data
+eSet <- new("ExpressionSet", exprs = RG_lognorm)
+arrayQualityMetrics(eSet, outdir="QC_Report_QNorm", force = TRUE, do.logtransform = TRUE)
+
+boxplot(data.frame(RGbg$E),
+        main="Boxplot Before Quantiles Normalization (log 2 scale)",
+        col = "lightgrey")
+boxplot(data.frame(RG_lognorm),
+        main="Boxplot After Quantiles Normalization (log 2 scale)",
+        col = "white")
+
+#Build an ExpressionSet object 
+eset <- new("ExpressionSet", exprs=RG_lognorm) 
+save(eset, file = "LogEset.RData") 
+
+GeneIDs<-RGfilt_0$genes$ProbeName
+GeneName <- RGfilt_0$genes$GeneName
+
+####SAVING normalized log 2 matrix in xls, NO MERGED for limma analysis
+logexprs<-exprs(eset)
+rownames(logexprs)<-GeneIDs
+logexprs2<-cbind(GeneIDs,GeneName,logexprs)    
+
+write.table(logexprs2, file = "FFPE-miRNA_Qnorm.xls", sep = "\t", col.names = TRUE , row.names = FALSE, qmethod = "double")
+
+#Saving raw data matrix in xls (NOT MERGED for Quality control)
+eset <- new("ExpressionSet", exprs=RG_raw) 
+save(eset, file = "LogEsetRaw.RData")
+
+Rawexprs<-exprs(eset)
+rownames(Rawexprs)<-GeneIDs
+Rawexprs<-cbind(GeneIDs,logexprs) 
+write.table(Rawexprs, file = "FFPE-miRNA_Raw.xls", sep = "\t", col.names = TRUE , row.names = FALSE, qmethod = "double")
+
+trash <- ls()
+rm(list = trash) 
