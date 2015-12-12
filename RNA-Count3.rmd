@@ -1,0 +1,19 @@
+---
+  output: html_document
+---
+  
+  #### Jongchul Seon
+  
+```{r chunk1,echo=TRUE}
+library(GEOquery)
+
+getGEOSuppFiles("GSE69686")
+list.files("GSE69686")
+untar("GSE69686/GSE69686_RAW.tar", exdir = "GSE69686/CEL")
+list.files("GSE69686/CEL")
+
+celfiles <- list.files("GSE69686/CEL", full = TRUE)
+rawData <- read.celfiles(celfiles)
+
+```
+
