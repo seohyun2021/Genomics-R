@@ -8,7 +8,7 @@ In my point of view, R is a very powerful tool for students who want to understa
 2. DNA-Methylation-Level.rmd
 3. RNA-Count2.rmd
 4. RNA-Count3.rmd (on plan)
-5. Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code which is not made by me. However, It is very good for self-study.
+5. Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code which is not made by me. However, I think it is very good for self-study.
 6. RNA-Align1.rmd (on plan)
 
 I appreciate below free on-line courses which I've studied genomics. 
