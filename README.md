@@ -12,7 +12,7 @@ In my point of view, R is a very powerful tool for students like me who want to 
 6. Gut-Microbiom1.rmd(on plan)
 
 
-*** Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code. It is well coded with the paper. 
+*** Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code. It is well coded with the paper and I like to use it for self-study. 
 
 I appreciate below free on-line courses which I've studied genomics. 
 
