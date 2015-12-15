@@ -16,7 +16,7 @@ In my point of view, R is a very powerful tool for students like me who want to 
 
 *** Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code. It is well coded with the paper and I like to use it for self-study. 
 
-*** mtDNA.rmd -> I just want to say that Mitchondria is a major component in the cell, even though I don't put anything about it on 
+*** mtDNA.rmd -> I just want to say that Mitochondria is a major component in the cell, even though I don't put anything about it on 
                 the site. 
 
 
