@@ -1,6 +1,6 @@
 # genomic-R
 
-Isn't it exciting that we can know about our cells and how they change and why I'm aging and sick?
+Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct?
 
 In my point of view, R is a very powerful tool for students like me who want to understand genomic data in statistical way. I want to share what I've learned from the course and self-study with people who are interested in genomics. 
 
