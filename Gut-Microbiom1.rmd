@@ -4,8 +4,8 @@ output: html_document
   #### Jongchul Seon
   
 ```{r chunk1,echo=TRUE}
-library(GEOquery)
-library(SRAdb)
+
+mydata <- read.table("s13073-015-0177-8-s1.txt",nrows=89)
 
 
 

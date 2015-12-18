@@ -1,0 +1,30 @@
+
+---
+  output: html_document
+---
+
+#### Jongchul Seon
+
+
+```{r chunk1,echo=TRUE}
+
+##source("http://www.bioconductor.org/biocLite.R")
+##biocLite(c("NanoStringNorm"))
+
+library(GEOquery)
+
+getGEOSuppFiles("GSE72526")
+list.files("GSE72526")
+
+geoMat <- getGEO("GSE72526",destdir = "D:\\R")
+
+### destdir = "D:\\R" => window OS directory
+
+
+pD.all <- pData(geoMat[[1]])
+
+head(pD.all)
+
+```
+
+

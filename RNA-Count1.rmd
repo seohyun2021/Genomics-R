@@ -1,21 +1,29 @@
 ---
-output: html_document
+output: word_document
 ---
-#### Jongchul Seon
 
-#### RNA-seq example 
+##### Jongchul Seon
+
+##### RNA Count example 1 
+
+------------------------
+
+##### Load 
+
+##### biological replicates C57BL/6J (10) <-> DBA/2J (11) are hybridized in each experiment and lane.
+
+##### experiment number and lane.number are different.There will be some variances among these. 
+
+##### We are going to use limma package to compare  the means of gene expression values for two groups of replicates for a given gene
 
 
-#### -------- load -----------------------------------------
-#### the RNA-seq data has no N.A.
-
---------
 
 ```{r chunk1,echo=TRUE}
 library(devtools)
 library(Biobase)
 library(goseq)
 library(limma)
+library(genefilter)
 #### library(DESeq2)
 
 
@@ -29,21 +37,24 @@ edata = exprs(bot)
 
 sum(is.na(edata))
 
+
+
 dim(edata)
 dim(pdata_bot)
 dim(fdata_bot)
 head(edata)
 head(pdata_bot)
 
+unique(pdata_bot[,1])
+
 ```
 
 
---------
+---------------- 
 
-#### ------ Data cleaning --------------------------------------
-#### Genes whose average counts are over than 5 are selected and log(2) transformed.
+##### Genes whose average counts are over than 5 are selected and log(2) transformed.
+##### A common pre-processing technique is to remove features that don't have much data
 
---------
 
 ```{r chunk2,echo=TRUE}
 
@@ -64,18 +75,15 @@ fdata_bot = fdata_bot[rowMeans(edata) > 5]
 edata = edata[rowMeans(edata) > 5, ]
 edata = log2(as.matrix(edata) + 1)
 
-
-par(mfrow=c(1,1))
-
 hist(edata,,col=2,range=0)
+
+
 ```
 
---------
+-----------------------
 
-#### ----------------------------------------------------------
-#### NCBI Build 37, mm9. check out the paper which describes the data, Evaluating Gene Expression in C57BL/6J and DBA/2JMouse Striatum Using RNA-Seq and Microarrays.  http://www.ncbi.nlm.nih.gov/pubmed?term=21455293. 
+##### NCBI Build 37, mm9. check out the paper which describes the data, Evaluating Gene Expression in C57BL/6J and DBA/2JMouse Striatum Using RNA-Seq and Microarrays.  http://www.ncbi.nlm.nih.gov/pubmed?term=21455293. 
 
---------
 
 ```{r chunk3,echo=TRUE}
 
@@ -85,7 +93,7 @@ isS4(supportedGenomes())
 head(supportedGenomes())
 
 species <- supportedGenomes()[,2]
-species
+## species
 
 ## source("http://www.bioconductor.org/biocLite.R")
 ## biocLite("org.Mm.eg.db")
@@ -97,12 +105,10 @@ species
 ```
 
 
---------
+--------------------------
 
-#### Using limma package to find differently expressed genes between two strands. 
-#### 223 genes are differently expressesed between two strands at the 5% FDR level using Benjamini-Hochberg correction.
+##### Using limma package to find differently expressed genes between two strands. 
 
---------
 
 ```{r chunk4,echo=TRUE}
 
@@ -110,7 +116,45 @@ mod = model.matrix(~ pdata_bot$strain)
 fit_limma = lmFit(edata,mod)
 ebayes_limma = eBayes(fit_limma)
 
+
+```
+
+
+-------------------------------------
+
+##### limma dose moderated t-statistics. Moderated t-statistics lead to pvalues in the same way that ordinary t-statistics do except that the degrees of freedom are increased, reflecting the greater reliability associated with the smoothed standard errors.
+
+
+```{r chunk5,echo=TRUE}
+
+par(mfrow=c(1,1))
+
+tstats_obj = rowttests(edata,pdata_bot$strain)
+##names(tstats_obj)
+hist(tstats_obj$statistic,col=2)
+
+plot(ebayes_limma$t[,2],tstats_obj$statistic,col=4,
+     xlab="Moderated T-stat",ylab="T-stat")
+
+
+```
+
+
+----------------
+
+###### Bonferroni and Benjamini-Hochberg FDR correction with p.adjust
+
+###### You can use the `p.adjust` function to get "multiple testing corrected" p-values which you can then use to control error rates.
+
+
+##### 223 genes are differently expressesed between two strands at the 5% FDR level using Benjamini-Hochberg correction.
+
+
+```{r chunk6,echo=TRUE}
+
 limma_pvals = topTable(ebayes_limma,adjust.method="BH",sort.by="none",number=dim(edata)[1])
+
+dim(limma_pvals)
 
 sum(limma_pvals$adj.P.Val < 0.05)
 
@@ -122,24 +166,24 @@ length(DE)
 
 ```
 
-
-
 --------
 
-#### Gene Set analysis using goseq package
-#### using database of 'Gene Ontology Consortium' to do gene set analysis
+##### Gene Set analysis using goseq package
+##### using database of 'Gene Ontology Consortium' to do gene set analysis
 
 
---------
-
-```{r chunk5,echo=TRUE}
+```{r chunk7,echo=TRUE}
 
 genes = as.integer(limma_pvals$adj.P.Val < 0.05)
 not_na = !is.na(genes)
 names(genes) = rownames(edata)
+##names(genes)
+
 genes = genes[not_na]
 
 head(supportedGenomes(),n=12)[,1:4]
+
+??nullp
 
 pwf=nullp(genes,"mm9","ensGene")
 head(pwf)
@@ -152,3 +196,10 @@ GO.MF[1:10,]
 
 ```
 
+
+
+```{r chunk8,echo=TRUE}
+
+devtools::session_info()
+
+``````

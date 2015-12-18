@@ -20,11 +20,20 @@ library(Biobase)
 library(arrayQualityMetrics)
 
 mypath <- readline("Please, insert the path to the Exiqon and target files folder: ")
+
+##mypath <- readline("GSE44899")
+
+
 filename <- readline("Please, insert the name of the eset output file (.RData): ")
 setwd(mypath)
 
 # Reading targets file.                                           
 targets <- readTargets("targets.txt", row.names="FullName")
+
+###targets <- readTargets(file="filelist.txt",row.names="FullName",path="D:/r/GSE44899/")
+###targets$GSE44899_RAW.tar
+###colnames(targets)[2] <- c("FileName")
+### RG <- read.maimages(targets, source="agilent", green.only=TRUE, names=targets$GSE44899_RAW.tar,path="D:/R/GSE44899/GSE44899_RAW")
 
 #Importing Exiqon files
 RG <- read.maimages(targets, source="agilent", green.only=TRUE, 
