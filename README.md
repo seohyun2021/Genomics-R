@@ -8,7 +8,7 @@ In my point of view, R is a very powerful tool for students like me who want to 
 2. RNA-Count1.rmd
 3. RNA-Count2.rmd
 4. RNA-Count3.rmd (on plan)
-5. RNA-Align1.rmd (on plan)
+5. Mutation-Stat.rmd (on plan)
 6. Gut-Microbiom1.rmd(on plan)
 
 
