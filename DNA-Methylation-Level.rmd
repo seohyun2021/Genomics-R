@@ -2,27 +2,46 @@
   output: html_document
 ---
   
-#### Jongchul Seon
-  
-#### -------- get Files from http://www.ncbi.nlm.nih.gov/gds/?term=GSE68777 ---------------------
-#### please check below
-#### http://kasperdanielhansen.github.io/genbioconductor/html/minfi.html
-#### http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0132001 or http://www.ncbi.nlm.nih.gov/pubmed/26147665
+##### Jongchul Seon
 
+##### DNA Methylation example (Bisulfite Sequencing, Illumina 450k array)
+
+------------------------
+
+##### Load 
+
+  
+##### We are going to use public data,from http://www.ncbi.nlm.nih.gov/gds/?term=GSE68777. You can check The journal and main author here,http://www.ncbi.nlm.nih.gov/pubmed/26147665 and http://kasperdanielhansen.github.io/genbioconductor/html/minfi.html
+
+
+##### Microarray-based methods to determine pattern of methylation. The Illumina Methylation Assay is one such assay that applies the bisulfite sequencing technology on a microarray level to generate genome-wide methylation data.
+
+##### We are going to compare DNA Methylation levels between two groups, Acute Mania(20) <-> Control(20)
 
 
 ```{r chunk1,echo=TRUE}
 
+library(devtools)
 library(GEOquery)
 library(minfi)
+library(doParallel) ##CRAN
+
+library(GenomicRanges)
+library(doParallel)
+
+library(pkgmaker)
 ##library(minfiData)
 library(AnnotationHub)
+
+library(epivizr)
 
 
 ## source("http://www.bioconductor.org/biocLite.R")
 ## biocLite(c("minfi"))
 
-getwd()
+## getwd()
+
+## data download  
 
 getGEOSuppFiles("GSE68777")
 untar("GSE68777/GSE68777_RAW.tar", exdir = "GSE68777/idat")
@@ -32,10 +51,41 @@ idatFiles <- list.files("GSE68777/idat", pattern = "idat.gz$", full = TRUE)
 
 sapply(idatFiles, gunzip, overwrite = TRUE)
 
+## data read
+
 rgSet <- read.450k.exp("GSE68777/idat")
 rgSet
 
 
+```
+
+
+-------------------------
+
+##### idat is raw data file format. 
+
+
+```{r chunk2,echo=TRUE}
+
+
+
+green <- getGreen(rgSet)
+red <- getRed(rgSet)
+
+par(mfrow=c(1,2))
+
+plot(rowMeans(red[1:500,]))
+plot(rowMeans(green[1:500,]))
+
+plot(rowMeans(red)-rowMeans(green))
+
+hist(green[1,])
+hist(red[1,])
+
+## probe locations can be devided into 4 categories of CpG island. (Island, OpenSea, Shelf, Shore)
+table(getIslandStatus(rgSet))
+
+pData(rgSet)
 
 ##class(rgSet)
 ##??RGChannelSet
@@ -59,25 +109,22 @@ rgSet
 ##hist(log2(red1$Quants[,1]))
 
 
-pData(rgSet)
-
-tempdir()
+##tempdir()
 
 
 ```
 
 
-#### -------- get the phenotype data ---------------------
+##### The phenotype data 
 
 
-```{r chunk2,echo=TRUE}
+```{r chunk3,echo=TRUE}
 
 ###getGEO
 ###geoMat <- getGEO("GSE68777")
-geoMat <- getGEO("GSE68777",destdir = "D:\\R")
-
 ### destdir = "D:\\R" => window OS directory
 
+geoMat <- getGEO("GSE68777",destdir = "D:\\R")
 
 pD.all <- pData(geoMat[[1]])
 
@@ -85,11 +132,16 @@ class(pD.all)
 head(pD.all)
 names(pD.all)
 
+rgSet
+
+
 ```
 
-#### -------- modify phenotype data for further analysis-----------------------------------------
 
-```{r chunk3,echo=TRUE}
+##### The phenoData(pD) and the featureData(rgSet) are modified for further analysis.
+
+```{r chunk4,echo=TRUE}
+
 
 
 pD <- pD.all[, c("title", "geo_accession", "characteristics_ch1.1", "characteristics_ch1.2")]
@@ -98,48 +150,132 @@ head(pD)
 names(pD)[c(3,4)] <- c("group", "sex")
 head(pD)
 
-pD$group
+##pD$group
 pD$group <- sub("^diagnosis: ", "", pD$group)
-pD$group
+##pD$group
 
-pD$sex 
+##pD$sex 
 pD$sex <- sub("^Sex: ", "", pD$sex)
-pD$sex
+##pD$sex
 
-sampleNames(rgSet) 
+##sampleNames(rgSet) 
 sampleNames(rgSet) <- sub(".*_5", "5", sampleNames(rgSet))
-sampleNames(rgSet) 
+##sampleNames(rgSet) 
 
 rownames(pD) <- pD$title
 pD <- pD[sampleNames(rgSet),]
-pData(rgSet) <- pD
-pData(rgSet)
-rgSet
 
+head(pD)
+
+
+pData(rgSet) <- pD
+head(pData(rgSet))
+rgSet
 
 
 ```
 
 
-#### -------- data Normalization 
-####---------- Please check the paper, Functional normalization of 450k methylation array data improves replication in large cancer studies,http://www.genomebiology.com/2014/15/12/503
------------------------------------------
+##### Beta = Meth / (Meth + Unmeth + offset)
 
-```{r chunk4,echo=TRUE}
+##### Beta value of Each sample should be left and right skewed.
+
+```{r chunk5,echo=TRUE}
+
+par(mfrow=c(1,1))
+
+densityPlot(RGset, sampGroups = pD$group, main = "Beta", xlab = "Beta")
+
+par(oma=c(2,10,1,1))
+densityBeanPlot(rgSet, sampGroups = pD$group,sampNames = pD$title)
+
+```
+
+
+##### Normalization 
+
+##### Beta = M/(M + U + 100) => Illumina formula
+
+##### M-values are perhaps an unfortunate terminology, but it seems to be standard in the methylation array world. These are computed as logit(Beta) and are obtained by getM.
+
+```{r chunk6,echo=TRUE}
+
+MSet.raw <- preprocessRaw(rgSet)
+
+getMeth(MSet.raw)[1:4,1:3]
+
+getUnmeth(MSet.raw)[1:4,1:3]
+
+getBeta(MSet.raw, type = "Illumina")[1:4,1:3]
+
+getM(MSet.raw)[1:4,1:3]
+
+MSet.norm <- 
+
+```
+
+```{r chunk7,echo=TRUE}
+
+M <- getM(rgSet, type = "beta", betaThreshold = 0.001)
+
+dmp <- dmpFinder(M, pheno=pD$group, type="categorical")
+
+head(dmp)
+
+```
+
+##### Normalization 
+##### You can check the paper, Functional normalization of 450k methylation array data improves replication in large cancer studies,http://www.genomebiology.com/2014/15/12/503
+
+
+```{r chunk5,echo=TRUE}
+
+dat = preprocessIllumina(rgSet)
+dat = mapToGenome(dat)
+
+dat = ratioConvert(dat,type="Illumina")
+
+detectCores()
+
+registerDoParallel(cores = 4)
+
+
+group =pData(dat)$group
+X= model.matrix(~group)
+index = which(seqnames(dat)=="chr15")
+
+dat = dat[index,] ## for illustrative purposes
+res=bumphunter(dat,X,cutoff=0.1,B=1000)
+
+table(getIslandStatus(dat))
+
+
+
+
+
+
+
+tissue =pData(dat)$Tissue
+X= model.matrix(~tissue)
+index = which(seqnames(dat)=="chr22")
+dat = dat[index,] ## for illustrative purposes
+res=bumphunter(dat,X,cutoff=0.1,B=1000)
+
 
 preprocessFunnorm
 
+rgSet2 <- preprocessFunnorm(rgSet)
 
-
-grSet2 <- preprocessFunnorm(rgSet)
-
-grSet2$group
-
+rgSet2$group
 
 ```
 
 
 #### --------please check http://genomicsclass.github.io/book/pages/inference_for_DNAmeth.html
+
+##### By default, the vendor,Illumina, suggests using the Beta-value to quantify the methylation levels
+
+##### Beta = Meth / (Meth + Unmeth + offset)
 
 ```{r chunk5,echo=TRUE}
 
