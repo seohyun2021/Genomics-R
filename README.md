@@ -57,3 +57,39 @@ I appreciate below free on-line courses which I've studied genomics.
 Hopely, it can be helpful for people who are interesed in genomics.
 
 Have a fun!!!!!
+
+
+
+## Bioconductor Install
+
+soft.pkgs <- c("AnnotationHub", 
+               "BSgenome", 
+               "Biobase", 
+               "Biostrings", 
+               "GEOquery", 
+               "GenomeInfoDb", 
+               "GenomicFeatures", 
+               "GenomicRanges", 
+               "IRanges", 
+               "Rsamtools",
+               "ShortRead",
+               "biomaRt",
+               "minfi",
+               "oligo",
+               "rtracklayer")
+
+data.pkgs <- c("ALL",
+               "BSgenome.Hsapiens.UCSC.hg19",
+               "BSgenome.Scerevisiae.UCSC.sacCer2",
+               "TxDb.Hsapiens.UCSC.hg19.knownGene",
+               "airway",
+               "hgu95av2.db",
+               "leeBamViews",
+               "leukemiasEset",
+               "minfiData",
+               "yeastRNASeq",
+               "zebrafishRNASeq")
+
+source("https://bioconductor.org/biocLite.R")  
+
+biocLite(c(soft.pkgs, data.pkgs)) 
