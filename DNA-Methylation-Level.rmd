@@ -29,11 +29,12 @@ library(doParallel) ##CRAN
 library(GenomicRanges)
 library(doParallel)
 
-library(pkgmaker)
-##library(minfiData)
-library(AnnotationHub)
+library(devtools)
 
-library(epivizr)
+##library(pkgmaker)
+##library(minfiData)
+##library(AnnotationHub)
+##library(epivizr)
 
 
 ## source("http://www.bioconductor.org/biocLite.R")
@@ -43,13 +44,13 @@ library(epivizr)
 
 ## data download  
 
-getGEOSuppFiles("GSE68777")
-untar("GSE68777/GSE68777_RAW.tar", exdir = "GSE68777/idat")
-head(list.files("GSE68777/idat", pattern = "idat"))
+#getGEOSuppFiles("GSE68777")
+#untar("GSE68777/GSE68777_RAW.tar", exdir = "GSE68777/idat")
+#head(list.files("GSE68777/idat", pattern = "idat"))
 
-idatFiles <- list.files("GSE68777/idat", pattern = "idat.gz$", full = TRUE)
+#idatFiles <- list.files("GSE68777/idat", pattern = "idat.gz$", full = TRUE)
 
-sapply(idatFiles, gunzip, overwrite = TRUE)
+#sapply(idatFiles, gunzip, overwrite = TRUE)
 
 ## data read
 
@@ -67,8 +68,6 @@ rgSet
 
 ```{r chunk2,echo=TRUE}
 
-
-
 green <- getGreen(rgSet)
 red <- getRed(rgSet)
 
@@ -77,8 +76,10 @@ par(mfrow=c(1,2))
 plot(rowMeans(red[1:500,]))
 plot(rowMeans(green[1:500,]))
 
+par(mfrow=c(1,1))
 plot(rowMeans(red)-rowMeans(green))
 
+par(mfrow=c(1,2))
 hist(green[1,])
 hist(red[1,])
 
@@ -184,7 +185,7 @@ rgSet
 
 par(mfrow=c(1,1))
 
-densityPlot(RGset, sampGroups = pD$group, main = "Beta", xlab = "Beta")
+densityPlot(rgSet, sampGroups = pD$group, main = "Beta", xlab = "Beta")
 
 par(oma=c(2,10,1,1))
 densityBeanPlot(rgSet, sampGroups = pD$group,sampNames = pD$title)
@@ -210,25 +211,35 @@ getBeta(MSet.raw, type = "Illumina")[1:4,1:3]
 
 getM(MSet.raw)[1:4,1:3]
 
-MSet.norm <- 
+MSet.norm <- preprocessIllumina(rgSet, bg.correct = TRUE, normalize = "controls", reference = 2)
 
 ```
 
+
+##### Finding diferentially methylated positions (DMPs)
+
 ```{r chunk7,echo=TRUE}
 
-M <- getM(rgSet, type = "beta", betaThreshold = 0.001)
+M <- getM(MSet.norm[1:20000,], type = "beta", betaThreshold = 0.001)
 
 dmp <- dmpFinder(M, pheno=pD$group, type="categorical")
 
 head(dmp)
 
+cpgs <- rownames(dmp)[1:4]
+
+par(mfrow=c(2,2))
+
+plotCpg(MSet.norm[1:20000,], cpg=cpgs, pheno=pD$group)
+
 ```
 
-##### Normalization 
-##### You can check the paper, Functional normalization of 450k methylation array data improves replication in large cancer studies,http://www.genomebiology.com/2014/15/12/503
 
 
-```{r chunk5,echo=TRUE}
+##### Finding diferentially methylated positions (Bumphunting)
+
+
+```{r chunk8,echo=TRUE}
 
 dat = preprocessIllumina(rgSet)
 dat = mapToGenome(dat)
@@ -247,86 +258,16 @@ index = which(seqnames(dat)=="chr15")
 dat = dat[index,] ## for illustrative purposes
 res=bumphunter(dat,X,cutoff=0.1,B=1000)
 
+res
+
 table(getIslandStatus(dat))
 
 
-
-
-
-
-
-tissue =pData(dat)$Tissue
-X= model.matrix(~tissue)
-index = which(seqnames(dat)=="chr22")
-dat = dat[index,] ## for illustrative purposes
-res=bumphunter(dat,X,cutoff=0.1,B=1000)
-
-
-preprocessFunnorm
-
-rgSet2 <- preprocessFunnorm(rgSet)
-
-rgSet2$group
-
 ```
 
 
-#### --------please check http://genomicsclass.github.io/book/pages/inference_for_DNAmeth.html
+```{r chunk9,echo=TRUE}
 
-##### By default, the vendor,Illumina, suggests using the Beta-value to quantify the methylation levels
-
-##### Beta = Meth / (Meth + Unmeth + offset)
-
-```{r chunk5,echo=TRUE}
-
-## design <- model.matrix(~ grSet2$group)
-## bumps <- bumphunter(grSet2, design = design, B = 0,
-                      type = "Beta", cutoff = 0.25)
-
-## class(bumps)
-## attributes(bumps)
-
-## head(bumps$table)
-## plot((bumps$table)[,4])
-## dim(bumps$table)
-
-control <- getBeta(grSet2[,grSet2$group == "Ctr"])
-
-mania <- getBeta(grSet2[,grSet2$group == "Mania"])
-
-
-total <- cbind(rowSums(control),rowSums(mania))
-plot(total,col=3)
-
-
-head(control)
-hist(control[1,])
-hist(control[3,])
-hist(rowSums(control))
-
-
-kmeans1 = kmeans(rowSums(control),centers=2)
-table(kmeans1$cluster)
-
-
-kmeans2 = kmeans(rowSums(mania),centers=2)
-table(kmeans2$cluster)
-
-
-rownames(control)
-
-cg_status <- getIslandStatus(grSet2)
-
-control_cg <- cbind(control,cg_status)
-
-mania_cg <- cbind(mania,cg_status)
-
-control_os <- subset(control_cg,cg_status == "OpenSea")
-mania_os <- subset(mania_cg,cg_status == "OpenSea")
-
-mean(as.numeric(control_os[,1:20]))
-mean(as.numeric(mania_os[,1:20]))
-
+devtools::session_info()
 
 ```
-
