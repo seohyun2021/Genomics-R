@@ -34,7 +34,7 @@ http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/
 
 
 
-3.  Where I study genomic.
+3. Where I study genomic.
 
 
 I appreciate below free on-line courses which I've studied genomics. 
