@@ -34,7 +34,9 @@ If you want to see each file as html format, just prepend below url to original 
 http://htmlpreview.github.io/?
 
 - your url will be like below.
+
 http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
+http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/DNA-Methylation-Level.html
 
 
 
