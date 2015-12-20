@@ -1,9 +1,9 @@
-# genomic-R
+## genomic-R
 
 Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct?
 
 
-1. Contents 
+## Contents 
 
 In my point of view, R is a very powerful tool for students like me who want to understand genomic data in statistical way. I want to share what I've learned from the course and self-study with people who are interested in genomics. 
 
@@ -22,7 +22,7 @@ In my point of view, R is a very powerful tool for students like me who want to 
 
 
 
-2. HTML view 
+## HTML view 
 
 If you want to see the each file as html format, just prepend below url to original one on the browser bar. 
 
@@ -34,7 +34,7 @@ http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/
 
 
 
-3. Where I study genomic.
+## Where I study genomic.
 
 
 I appreciate below free on-line courses which I've studied genomics. 
