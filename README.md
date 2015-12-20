@@ -22,15 +22,22 @@ In my point of view, R is a very powerful tool for students like me who want to 
 
 
 
+
+
+
+
 ## HTML view 
 
-If you want to see the each file as html format, just prepend below url to original one on the browser bar. 
+If you want to see each file as html format, just prepend below url to original html file url on the browser bar. 
 
 - prepend url 
 http://htmlpreview.github.io/?
 
 - your url will be like below.
 http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
+
+
+
 
 
 
