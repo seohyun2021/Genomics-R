@@ -10,9 +10,8 @@ In my point of view, R is a very powerful tool for students like me who want to 
 1. DNA-Methylation-Level.rmd
 2. RNA-Count1.rmd
 3. RNA-Count2.rmd
-4. RNA-Count3.rmd (on plan)
-5. Mutation-Stat.rmd (on plan)
-6. Gut-Microbiom1.rmd(on plan)
+4. Mutation-Stat.rmd (on plan)
+5. Gut-Microbiom1.rmd(on plan)
 
 
 *** Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code. It is well coded with the paper and I like to use it for self-study. 
@@ -36,6 +35,7 @@ http://htmlpreview.github.io/?
 - your url will be like below.
 
 http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
+http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count2.html
 http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/DNA-Methylation-Level.html
 
 
