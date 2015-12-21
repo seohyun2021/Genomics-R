@@ -2,11 +2,13 @@
   output: html_document
 ---
   
-#### Jongchul Seon
+##### Jongchul Seon
 
-#### data loading  
-#### please check below
-#### http://www.ncbi.nlm.nih.gov/pubmed/26343147
+
+##### We are going to compare genes which shows significant relationships with young and old which can explain biological aging predicting cognitive function. The original paper is http://www.ncbi.nlm.nih.gov/pubmed/26343147. It is only the first test on the paper. 
+
+##### The profiling was done using the Affymetrix array. We are going to use oligo package.
+
 
 ```{r chunk1,echo=TRUE}
 
@@ -16,14 +18,15 @@ library(dendextend)
 library(biomaRt)
 library(limma)
 
+##
 getwd()
 
-getGEOSuppFiles("GSE59880")
-list.files("GSE59880")
-untar("GSE59880/GSE59880_RAW.tar", exdir = "GSE59880/CEL")
-list.files("GSE59880/CEL")
+#getGEOSuppFiles("GSE59880")
+##list.files("GSE59880")
+##untar("GSE59880/GSE59880_RAW.tar", exdir = "GSE59880/CEL")
+##list.files("GSE59880/CEL")
 
-celfiles <- list.files("GSE59880/CEL", full = TRUE)
+celfiles <- list.files("D:/R/GSE59880/CEL", full = TRUE)
 rawData <- read.celfiles(celfiles)
 
 
@@ -32,75 +35,50 @@ rawData <- read.celfiles(celfiles)
 ```
 
 
-#### dara normalization
-#### please check https://github.com/kasperdanielhansen/genbioconductor/blob/master/Rmd/oligo.Rmd
+##### raw data 
 
 ```{r chunk2,echo=TRUE}
 
-dim(exprs(rawData))
+edata_raw <- exprs(rawData)
 
-exprs(rawData)[1:10,]
+dim(edata_raw)
 
-sum(is.na(exprs(rawData)))
+edata_raw[1:10,]
 
-hist(exprs(rawData)[,1])
+sum(is.na(edata_raw))
 
-boxplot(log(exprs(rawData))[,1:5],col=2)
+hist(edata_raw[,1])
+
+boxplot(log(edata_raw)[,1:10],col=2)
+
+mm = log2(edata_raw[,1]+1) - log2(edata_raw[,2]+1)
+aa = log2(edata_raw[,1]+1) + log2(edata_raw[,2]+1)
+plot(aa,mm,col=2)
 
 
-##dist1 = dist(t(exprs(rawData)))
-##hclust1 = hclust(dist1)
-##plot(hclust1)
+```
 
-##dend = as.dendrogram(hclust1)
-##dend = color_labels(hclust1,2,col=1:2)
-##plot(dend)
 
+
+##### normalization
+
+```{r chunk3,echo=TRUE}
 
 normData <- rma(rawData)
 normData
 
 dim(normData)
 
-boxplot(normData,col=2)
+head(exprs(normData))
 
+edata <- exprs(normData)
 
-```
-
-
-####select gene expression data strongly related with aging according to the paper. 
- 
-
-```{r chunk3,echo=TRUE}
-
-library(xlsx)
-data <- read.xlsx("13059_2015_750_MOESM1_ESM.xlsx", 1, startRow=2, endRow=152,colIndex=1)
-
-head(data)
-
-genes <- as.vector(as.matrix(data))
-
-genes_age <- exprs(normData)[rownames(exprs(normData))  %in% genes,]
-
-genes_age
-
-boxplot(genes_age)
-
-dist1 = dist(t(genes_age))
-
-hclust1 = hclust(dist1)
-plot(hclust1)
-
-dend = as.dendrogram(hclust1)
-dend = color_labels(hclust1,2,col=1:2)
-plot(dend)
-
-heatmap(genes_age)
+boxplot(edata[,1:30],col=2)
 
 ```
 
 
-#### The phenotype data loading 
+##### phenotype data
 
 
 ```{r chunk4,echo=TRUE}
@@ -109,37 +87,26 @@ geoMat <- getGEO("GSE59880",destdir = "D:\\R")
 
 ### destdir = "D:\\R" => window OS directory
 
-
 pD.all <- pData(geoMat[[1]])
 
-class(pD.all)
 head(pD.all)
 names(pD.all)
 
-pD <- pD.all[, c("title", "geo_accession", "characteristics_ch1.1","characteristics_ch1.2","characteristics_ch1.3","characteristics_ch1.4","platform_id"  )]
+##pD <- pD.all[, c("title", "geo_accession", "characteristics_ch1.1","characteristics_ch1.2","characteristics_ch1.3","characteristics_ch1.4","platform_id"  )]
 
 
 pD <- pD.all[, c("title", "geo_accession", "characteristics_ch1.1","characteristics_ch1.2")]
 
-head(pD)
-
 names(pD)[c(3,4)] <- c("age", "fitness")
-head(pD)
+## head(pD)
 
-
-pD$age
+##pD$age
 pD$age <- sub("^age: ","", pD$age)
-pD$age
+##pD$age
 
-pD$fitness 
+##pD$fitness 
 pD$fitness <- sub("^aerobic fitness: ", "", pD$fitness)
-pD$fitness
-
-normData
-??ExpressionSet
-
-sampleNames(normData) <- sub("^_*.CEL.gz$", "", sampleNames(normData))
-sampleNames(normData)
+##pD$fitness
 
 changeName <- function(x) {
   
@@ -161,23 +128,42 @@ sampleNames(normData) <- changeName(sampleNames(normData))
 
 sampleNames(normData)
 
-rownames(pD) 
+### rownames(pD) 
 
+pData(normData) <- pD
 ```
+
 
 
 ```{r chunk5,echo=TRUE}
 
+ageGrp <- ifelse((pData(normData)$age)>50, "old", "young")
 
-mod = model.matrix(~ pD$age)
-fit_limma = lmFit(exprs(normData),mod)
+
+mod = model.matrix(~ ageGrp)
+fit_limma = lmFit(edata,mod)
 ebayes_limma = eBayes(fit_limma)
 
-limma_pvals = topTable(ebayes_limma,adjust.method="BH",sort.by="none",number=dim(exprs(normData))[1])
+
+```
+
+
+```{r chunk6,echo=TRUE}
+
+
+limma_pvals = topTable(ebayes_limma,adjust.method="BH",sort.by="none",number=dim(edata)[1])
+
+dim(limma_pvals)
+
+head(limma_pvals[limma_pvals$adj.P.Val < 0.05,])
 
 sum(limma_pvals$adj.P.Val < 0.05)
 
-genes <- limma_pvals$adj.P.Val < 0.05
+cgenes <- rownames(limma_pvals[limma_pvals$adj.P.Val < 0.05,])
+
+length(cgenes)
+
+###genes <- limma_pvals$adj.P.Val < 0.05
 
 ###DE <- featureNames(fdata_bot)[genes]
 
@@ -185,20 +171,47 @@ genes <- limma_pvals$adj.P.Val < 0.05
 
 ```
 
+####select gene expression data strongly related with aging according to the paper. 
+ 
 
+```{r chunk7,echo=TRUE}
 
-```{r chunk6,echo=TRUE}
+library(xlsx)
+data <- read.xlsx("D:/R/13059_2015_750_MOESM1_ESM.xlsx", 1, startRow=2, endRow=152,colIndex=1)
 
-head(listMarts())
-mart <- useMart("ensembl")
-mart
-head(listDatasets(mart))
-ensembl <- useDataset("hsapiens_gene_ensembl", mart)
-ensembl
+head(data)
 
-values <- genes
-getBM(attributes = c("ensembl_gene_id", "affy_hg_u133_plus_2"),
-      filters = "affy_hg_u133_plus_2", values = values, mart = ensembl)
+genes <- as.vector(as.matrix(data))
 
 ```
+
+
+```{r chunk8,echo=TRUE}
+
+sum(cgenes %in% genes)
+
+```
+
+
+```{r chunk9,echo=TRUE}
+
+genes_age <- exprs(normData)[rownames(exprs(normData))  %in% genes,]
+
+head(genes_age)
+
+boxplot(genes_age)
+
+dist1 = dist(t(genes_age))
+
+hclust1 = hclust(dist1)
+plot(hclust1)
+
+dend = as.dendrogram(hclust1)
+dend = color_labels(hclust1,2,col=1:2)
+plot(dend)
+
+heatmap(genes_age)
+
+```
+
 
