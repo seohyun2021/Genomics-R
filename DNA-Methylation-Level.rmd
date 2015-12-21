@@ -1,5 +1,5 @@
 ---
-output: word_document
+output: html_document
 ---
   
 ##### Jongchul Seon
@@ -16,7 +16,7 @@ output: word_document
 
 ##### Microarray-based methods to determine pattern of methylation. The Illumina Methylation Assay is one such assay that applies the bisulfite sequencing technology on a microarray level to generate genome-wide methylation data.
 
-##### We are going to compare DNA Methylation levels between two groups, Acute Mania(20) <-> Control(20)
+##### We are going to compare DNA Methylation levels between two groups, Acute Mania(20) <-> Control(20).(It is only the first test on the paper.)
 
 
 ```{r chunk1,echo=TRUE}
@@ -202,14 +202,42 @@ getBeta(MSet.raw, type = "Illumina")[1:4,1:3]
 
 getM(MSet.raw)[1:4,1:3]
 
-MSet.norm <- preprocessIllumina(rgSet, bg.correct = TRUE, normalize = "controls", reference = 2)
 
 ```
 
 
-##### Finding diferentially methylated positions (DMPs)
+
 
 ```{r chunk7,echo=TRUE}
+
+MSet.norm <- preprocessIllumina(rgSet, bg.correct = TRUE, normalize = "controls", reference = 2)
+
+
+dim(MSet.norm)
+
+test1 <- getMeth(MSet.norm)
+
+length(test1[test1==0])
+
+length(test1[rowSums(test1)==0])
+
+sum(is.na(test1))
+
+test2 <- getUnmeth(MSet.norm)
+
+sum(is.na(test2))
+
+length(test2[test2==0])
+
+length(test2[rowSums(test2)==0])
+
+
+
+```
+
+##### Finding diferentially methylated positions (DMPs)
+
+```{r chunk8,echo=TRUE}
 
 M <- getM(MSet.norm[1:20000,], type = "beta", betaThreshold = 0.001)
 
@@ -230,7 +258,7 @@ plotCpg(MSet.norm[1:20000,], cpg=cpgs, pheno=pD$group)
 ##### Finding diferentially methylated positions (Bumphunting)
 
 
-```{r chunk8,echo=TRUE}
+```{r chunk9,echo=TRUE}
 
 dat = mapToGenome(MSet.norm, mergeManifest = TRUE)
 
@@ -257,10 +285,10 @@ table(getIslandStatus(dat))
 
 ```
 
-###### There should be more necessary works related with Methylation Level Analysis.
+###### There should be more necessary works related with Methylation Level Analysis like Overall CpG island methylation level comparisons.
 
 
-```{r chunk9,echo=TRUE}
+```{r chunk10,echo=TRUE}
 
 devtools::session_info()
 
