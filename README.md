@@ -46,7 +46,7 @@ http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/
 ## Where I study genomic.
 
 
-I appreciate below free on-line courses which I've studied genomics. 
+I appreciate below free on-line courses where I've studied genomics. 
 
 - www.coursera.org
 - www.edx.org
