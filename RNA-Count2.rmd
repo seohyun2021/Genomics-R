@@ -36,6 +36,7 @@ rawData <- read.celfiles(celfiles)
 
 
 ##### raw data 
+##### We can see some variances in old according to the data. However, I assume that there is no big expression variances among old and will use rma for normalization.
 
 ```{r chunk2,echo=TRUE}
 
@@ -47,12 +48,18 @@ edata_raw[1:10,]
 
 sum(is.na(edata_raw))
 
-hist(edata_raw[,1])
+par(mfrow=c(1,2))
 
-boxplot(log(edata_raw)[,1:10],col=2)
+boxplot(log(edata_raw[,1:15]), main="old", col=2,range=0 )
 
-mm = log2(edata_raw[,1]+1) - log2(edata_raw[,2]+1)
-aa = log2(edata_raw[,1]+1) + log2(edata_raw[,2]+1)
+boxplot(log(edata_raw[,16:30]), main="young", col=2,range=0 )
+
+par(mfrow=c(1,1))
+
+hist(log(edata_raw[,1]))
+
+mm = log(edata_raw[,1]+1) - log(edata_raw[,2]+1)
+aa = log(edata_raw[,1]+1) + log(edata_raw[,2]+1)
 plot(aa,mm,col=2)
 
 
@@ -73,7 +80,7 @@ head(exprs(normData))
 
 edata <- exprs(normData)
 
-boxplot(edata[,1:30],col=2)
+boxplot(edata[,1:30],main="expression data",col=2)
 
 ```
 
@@ -130,6 +137,10 @@ sampleNames(normData)
 
 ### rownames(pD) 
 
+group <- ifelse((pD$age)>50, "old", "young")
+
+pD <- cbind(pD,group)
+
 pData(normData) <- pD
 ```
 
@@ -137,11 +148,9 @@ pData(normData) <- pD
 
 ```{r chunk5,echo=TRUE}
 
-ageGrp <- ifelse((pData(normData)$age)>50, "old", "young")
 
-
-mod = model.matrix(~ ageGrp)
-fit_limma = lmFit(edata,mod)
+mod = model.matrix(~ pData(normData)$group)
+fit_limma = lmFit(exprs(normData),mod)
 ebayes_limma = eBayes(fit_limma)
 
 
@@ -215,3 +224,27 @@ heatmap(genes_age)
 ```
 
 
+```{r chunk10,echo=TRUE}
+
+
+limma_pvals_test1 = topTable(ebayes_limma,adjust.method="BH",sort.by="logFC",number=dim(edata)[1])
+
+sum(rownames(limma_pvals_test1)  %in% genes)
+
+
+limma_pvals_test2 = topTable(ebayes_limma,adjust.method="hochberg",sort.by="logFC",number=dim(edata)[1])
+
+tgenes <- rownames(limma_pvals_test2[limma_pvals_test2$adj.P.Val < 0.05,])
+
+sum(tgenes %in% genes)
+
+###affy_probes <- read.xlsx("D:/R/GPL570-13270.xlsx", 1, startRow=20,endRow=500)
+
+
+```
+
+```{r chunk11,echo=TRUE}
+
+devtools::session_info()
+
+``````
