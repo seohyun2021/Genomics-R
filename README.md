@@ -62,6 +62,11 @@ Have a fun!!!!!
 
 ## Bioconductor Install
 
+There are a bunch of examples you can find out on the official bioconductor page.
+
+http://www.bioconductor.org/help/course-materials/
+
+
 soft.pkgs <- c("AnnotationHub", 
                "BSgenome", 
                "Biobase", 
