@@ -1,6 +1,10 @@
 ## genomic-R
 
-Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct?
+Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some examples based on my understadings. 
+
+You can find out more examples on the official bioconductor site. 
+
+http://www.bioconductor.org/help/course-materials/
 
 
 ## Contents 
@@ -18,11 +22,6 @@ In my point of view, R is a very powerful tool for students like me who want to 
 
 *** mtDNA.rmd -> I just want to say that Mitochondria is a major component in the cell, even though I don't put anything about it on 
                 the site. 
-
-
-
-
-
 
 
 ## HTML view 
@@ -61,10 +60,6 @@ Have a fun!!!!!
 
 
 ## Bioconductor Install
-
-There are a bunch of examples you can find out on the official bioconductor page.
-
-http://www.bioconductor.org/help/course-materials/
 
 
 soft.pkgs <- c("AnnotationHub", 
