@@ -1,10 +1,15 @@
 ## genomic-R
 
-Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some examples based on my understadings. 
+Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some examples based on my understandings. 
 
 You can find out more examples on the official bioconductor site. 
 
 http://www.bioconductor.org/help/course-materials/
+
+
+Hopely, it can be helpful for people who are interesed in genomics.
+
+Have a fun!!!!!
 
 
 ## Contents 
@@ -50,12 +55,6 @@ I appreciate below free on-line courses where I've studied genomics.
 - www.coursera.org
 - www.edx.org
 - lagunita.stanford.edu
-
-
-
-Hopely, it can be helpful for people who are interesed in genomics.
-
-Have a fun!!!!!
 
 
 
