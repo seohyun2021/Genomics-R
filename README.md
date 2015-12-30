@@ -1,6 +1,6 @@
 ## genomic-R
 
-Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some examples based on my understandings. 
+Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some R examples based on my understandings about genomics. 
 
 You can find out more examples on the official bioconductor site. 
 
@@ -13,8 +13,6 @@ Have a fun!!!!!
 
 
 ## Contents 
-
-In my point of view, R is a very powerful tool for students like me who want to understand genomic data in statistical way. I want to share what I've learned from the course and self-study with people who are interested in genomics. 
 
 1. DNA-Methylation-Level.rmd
 2. RNA-Count1.rmd
@@ -43,23 +41,14 @@ http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/
 http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/DNA-Methylation-Level.html
 
 
-
-
-
-
-## Where I study genomic.
-
-
-I appreciate below free on-line courses where I've studied genomics. 
+## MOCC about genomics.
 
 - www.coursera.org
 - www.edx.org
 - lagunita.stanford.edu
 
 
-
-## Bioconductor Install
-
+## Bioconductor Installation
 
 soft.pkgs <- c("AnnotationHub", 
                "BSgenome", 
