@@ -1,6 +1,6 @@
 ## genomic-R
 
-Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some R examples based on my understandings about genomics. 
+Isn't it exciting that we can make snapshot of our cells and understand how they change and why I'm aging and sick, even though it is not always correct? I've made some R examples based on my understanding about genomics. 
 
 You can find out more examples on the official bioconductor site. 
 
