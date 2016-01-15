@@ -7,7 +7,7 @@ You can find out more examples on the official bioconductor site.
 http://www.bioconductor.org/help/course-materials/
 
 
-Hopely, it can be helpful for people who are interesed in genomics.
+Hopefully, it can be helpful for people who are interested in genomics.
 
 Have a fun!!!!!
 
