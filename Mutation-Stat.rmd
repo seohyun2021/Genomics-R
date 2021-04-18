@@ -2,4 +2,4 @@
   output: html_document
 ---
 
-#### Jongchul Seon
+#### Jongchul Sun
