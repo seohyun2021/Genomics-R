@@ -36,18 +36,13 @@ http://htmlpreview.github.io/?
 
 - your url will be like below.
 
-deleted
-
 - http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
 - http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count2.html
 - http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/DNA-Methylation-Level.html
 
 ## MOCC about genomics.
 
-- www.coursera.org
-- www.edx.org
-- lagunita.stanford.edu
-
+deleted
 
 ## Bioconductor Installation
 
