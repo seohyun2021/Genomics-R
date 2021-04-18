@@ -2,7 +2,7 @@
 output: pdf_document
 ---
 
-##### Jongchul Seon
+##### Jongchul Sun
 
 ##### RNA Count example 1 
 
