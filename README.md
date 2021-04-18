@@ -39,6 +39,8 @@ http://htmlpreview.github.io/?
 deleted
 
 http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
+http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count2.html
+http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/DNA-Methylation-Level.html
 
 ## MOCC about genomics.
 
