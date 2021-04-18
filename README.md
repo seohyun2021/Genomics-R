@@ -36,9 +36,7 @@ http://htmlpreview.github.io/?
 
 - your url will be like below.
 
-http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
-http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count2.html
-http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/DNA-Methylation-Level.html
+deleted
 
 
 ## MOCC about genomics.
