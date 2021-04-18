@@ -2,7 +2,7 @@
   output: html_document
 ---
   
-##### Jongchul Seon
+##### Jongchul Sun
 
 
 ##### We are going to compare genes which shows significant relationships with young and old which can explain biological aging predicting cognitive function. The original paper is http://www.ncbi.nlm.nih.gov/pubmed/26343147. It is only the first test on the paper. 
