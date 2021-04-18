@@ -1,7 +1,7 @@
 output: html_document
 ---
   
-  #### Jongchul Seon
+  #### Jongchul Sun
   
 ```{r chunk1,echo=TRUE}
 
