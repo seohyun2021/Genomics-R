@@ -38,6 +38,7 @@ http://htmlpreview.github.io/?
 
 deleted
 
+http://htmlpreview.github.io/?https://github.com/jongchul/genomic-R/blob/master/output/RNA-Count1.html
 
 ## MOCC about genomics.
 
