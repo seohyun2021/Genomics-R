@@ -2,7 +2,7 @@
 output: html_document
 ---
   
-##### Jongchul Seon
+##### Jongchul Sun
 
 ##### DNA Methylation example (Bisulfite Sequencing, Illumina 450k array)
 
