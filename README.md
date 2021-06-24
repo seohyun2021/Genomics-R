@@ -17,14 +17,6 @@ Have a fun!!!!!
 1. DNA-Methylation-Level.rmd
 2. RNA-Count1.rmd
 3. RNA-Count2.rmd
-4. Mutation-Stat.rmd (on plan)
-5. Gut-Microbiom1.rmd(on plan)
-
-
-*** Exiqon_normalization_miRNA-FFPE.Rmd -> miRNA analysis R code. It is well coded with the paper and I like to use it for self-study. 
-
-*** mtDNA.rmd -> I just want to say that Mitochondria is a major component in the cell, even though I don't put anything about it on 
-                the site. 
 
 
 ## HTML view 
